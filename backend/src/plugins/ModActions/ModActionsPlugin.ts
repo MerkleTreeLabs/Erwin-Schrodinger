@@ -38,6 +38,7 @@ import { WarnCmd } from "./commands/WarnCmd";
 import { AuditLogEvents } from "./events/AuditLogEvents";
 import { CreateBanCaseOnManualBanEvt } from "./events/CreateBanCaseOnManualBanEvt";
 import { CreateUnbanCaseOnManualUnbanEvt } from "./events/CreateUnbanCaseOnManualUnbanEvt";
+import { CreateKickCaseOnManualKickEvt } from "./events/CreateKickCaseOnManualKickEvt";
 import { PostAlertOnMemberJoinEvt } from "./events/PostAlertOnMemberJoinEvt";
 import { banUserId } from "./functions/banUserId";
 import { clearTempban } from "./functions/clearTempban";
@@ -120,7 +121,7 @@ export const ModActionsPlugin = guildPlugin<ModActionsPluginType>()({
   configParser: (input) => zModActionsConfig.parse(input),
   defaultOptions,
 
-  events: [CreateBanCaseOnManualBanEvt, CreateUnbanCaseOnManualUnbanEvt, PostAlertOnMemberJoinEvt, AuditLogEvents],
+  events: [CreateBanCaseOnManualBanEvt, CreateUnbanCaseOnManualUnbanEvt, CreateKickCaseOnManualKickEvt, PostAlertOnMemberJoinEvt, AuditLogEvents],
 
   messageCommands: [
     UpdateCmd,
