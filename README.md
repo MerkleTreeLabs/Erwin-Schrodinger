@@ -1,6 +1,7 @@
-![Zeppelin Banner](assets/zepbanner.png)
-# Zeppelin
-Zeppelin is a moderation bot for Discord, designed with large servers and reliability in mind.
+![Schrodinger](https://upload.wikimedia.org/wikipedia/commons/2/2e/Erwin_Schr%C3%B6dinger_%281933%29.jpg)
+# Erwin Schrodinger
+
+This is a Zeppelin moderation bot for Discord, designed with large servers and reliability in mind.
 
 **Main features include:**
 - Extensive automoderator features (automod)
