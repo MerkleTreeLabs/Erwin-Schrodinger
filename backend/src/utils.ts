@@ -974,11 +974,22 @@ export type UserNotificationMethod = { type: "dm" } | { type: "channel"; channel
 
 export const disableUserNotificationStrings = ["no", "none", "off"];
 
+
+// updating to include multiple responses
+export interface UserNotificationResult {
+  method: UserNotificationMethod | UserNotificationMethod[] | null;
+  success: boolean;
+  text?: string;
+}
+
+
+/*
 export interface UserNotificationResult {
   method: UserNotificationMethod | null;
   success: boolean;
   text?: string;
 }
+*/
 
 export function createUserNotificationError(text: string): UserNotificationResult {
   return {
@@ -992,6 +1003,63 @@ export function createUserNotificationError(text: string): UserNotificationResul
  * Attempts to notify the user using one of the specified methods. Only the first one that succeeds will be used.
  * @param methods List of methods to try, in priority order
  */
+export async function notifyUser(
+  user: User,
+  body: string,
+  methods: UserNotificationMethod[],
+): Promise<UserNotificationResult> {
+  if (methods.length === 0) {
+    return { method: null, success: true };
+  }
+
+  let successes: UserNotificationMethod[] = [];
+  let errors: string[] = [];
+
+  for (const method of methods) {
+    if (method.type === "dm") {
+      try {
+        await sendDM(user, body, "mod action notification");
+        successes.push(method);
+      } catch (e) {
+        errors.push(`Failed to send DM: ${e.message}`);
+      }
+    } else if (method.type === "channel") {
+      try {
+        await method.channel.send({
+          content: `<@!${user.id}> ${body}`,
+          allowedMentions: { users: [user.id] },
+        });
+        successes.push(method);
+      } catch (e) {
+        errors.push(`Failed to send message in channel <#${method.channel.id}>: ${e.message}`);
+      }
+    }
+  }
+
+  if (successes.length > 0) {
+    return {
+      method: successes.length === 1 ? successes[0] : successes,
+      success: true,
+      text: successes
+        .map((method) => {
+          if (method.type === "dm") {
+            return "user notified with a direct message";
+          } else if (method.type === "channel") {
+            return `user notified in <#${method.channel.id}>`;
+          }
+        })
+        .join(", "),
+    };
+  } else {
+    return {
+      method: null,
+      success: false,
+      text: errors.join(", "),
+    };
+  }
+}
+
+/*
 export async function notifyUser(
   user: User,
   body: string,
@@ -1015,9 +1083,7 @@ export async function notifyUser(
       } catch (e) {
         lastError = e;
       }
-    } 
-//    else if (method.type === "channel") {
-    if (method.type === "channel") {
+    } else if (method.type === "channel") {
       try {
         await method.channel.send({
           content: `<@!${user.id}> ${body}`,
@@ -1042,6 +1108,11 @@ export async function notifyUser(
     text: errorText,
   };
 }
+*/
+
+
+
+
 
 export function ucfirst(str) {
   if (typeof str !== "string" || str === "") return str;
