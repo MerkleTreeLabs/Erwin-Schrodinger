@@ -1015,7 +1015,9 @@ export async function notifyUser(
       } catch (e) {
         lastError = e;
       }
-    } else if (method.type === "channel") {
+    } 
+//    else if (method.type === "channel") {
+    if (method.type === "channel") {
       try {
         await method.channel.send({
           content: `<@!${user.id}> ${body}`,
