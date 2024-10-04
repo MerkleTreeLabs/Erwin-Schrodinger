@@ -1,10 +1,11 @@
-version: '3'
+#version: '3'
 name: zeppelin-prod
 volumes:
   mysql-data:
 services:
   mysql:
     image: mysql:8.0
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${STANDALONE_MYSQL_ROOT_PASSWORD?:Missing STANDALONE_MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: zeppelin
@@ -25,6 +26,7 @@ services:
       retries: 60
 
   nginx:
+    restart: always
     build:
       context: .
       dockerfile: docker/production/nginx/Dockerfile
@@ -58,7 +60,8 @@ services:
       migrate:
         condition: service_completed_successfully
     build: *build
-    restart: on-failure
+    restart: always
+    #restart: on-failure
     environment: *env
     env_file:
       - .env
@@ -70,19 +73,21 @@ services:
       migrate:
         condition: service_completed_successfully
     build: *build
-    restart: on-failure
+    #restart: on-failure
+    restart: always
     environment: *env
     env_file:
       - .env
     working_dir: /zeppelin/backend
     command: ["npm", "run", "start-bot-prod"]
-  
+
   dashboard:
     depends_on:
       migrate:
         condition: service_completed_successfully
     build: *build
-    restart: on-failure
+    restart: always
+    #restart: on-failure
     environment: *env
     env_file:
       - .env
